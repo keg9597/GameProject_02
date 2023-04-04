@@ -10,16 +10,30 @@ public class PlayerController : MonoBehaviour
     public LayerMask ground; //레이어 마스크 설정
     public float groundDistance = 0.2f;
 
+    public float attackCulTime;
+    public float attackCoolTime;
+
     private Rigidbody rb;
     Vector3 dir = Vector3.zero;
     
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        rb.drag = 1;
     }
 
     void Update()
     {
+        if(Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            attackCulTime += Time.deltaTime;
+            if(attackCulTime > attackCoolTime)
+            {
+                attackCulTime = 0;
+                Debug.Log("공격");
+            }
+        }
+
         GroundCheck(); //땅 위에 서있는
         InputAndDir();
         Jump();
