@@ -4,24 +4,30 @@ using UnityEngine;
 
 public class MainCameraAction : MonoBehaviour
 {
-    public float sensitivity = 100f;
-    public Transform player;
-    float xRotation = 0f;
+    private RotateToMouse rotateToMouse; //마우스 이동으로 카메라 회전
+    private Zoom zoom;
 
-    private void Start()
+    private void Awake()
     {
-        Cursor.lockState = CursorLockMode.Locked;
+        rotateToMouse = GetComponent<RotateToMouse>();
+        zoom = GetComponentInChildren<Zoom>();
     }
-
     private void Update()
     {
-        float mouseX = Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
-        float mouseY = Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime;
+        UpdateRotate();
+        UpdateZoom();
+    }
 
-        xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation, -90, 90f);
+    void UpdateRotate()
+    {
+        float mouseX = Input.GetAxis("Mouse X");
+        float mouseY = Input.GetAxis("Mouse Y");
+        rotateToMouse.CalculateRotation(mouseX, mouseY);
+    }
 
-        transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-        player.Rotate(Vector3.up * mouseX);
+    void UpdateZoom()
+    {
+        float t_zoomDirection = Input.GetAxis("Mouse ScrollWheel");
+        zoom.ZoomInOut(t_zoomDirection);
     }
 }

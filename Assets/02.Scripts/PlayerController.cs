@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField]
+    private Animator picoChanAnim;
     public float speed = 10;
     public float jumpHeight = 3f; //점프 높이 설정
     public bool isGrounded; //땅에 서있는지 체크하기 위한 bool값
@@ -11,20 +13,23 @@ public class PlayerController : MonoBehaviour
     public float groundDistance = 0.2f;
 
     public float attackCulTime;
-    public float attackCoolTime;
+    public float attackCoolTime;   
 
     private Rigidbody rb;
     Vector3 dir = Vector3.zero;
-    
+        
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.drag = 1;
+        picoChanAnim = this.gameObject.transform.GetChild(0).GetComponent<Animator>();
     }
 
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Mouse0))
+        InputAndDir();
+
+        if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             attackCulTime += Time.deltaTime;
             if(attackCulTime > attackCoolTime)
@@ -34,8 +39,42 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        //if(picoChanAnim != null)
+        //{
+        //    picoChanAnim.SetInteger("playerState", 1);
+        //    switch (playerState)
+        //    {
+        //        case PLAYERSTATE.IDLE:
+        //            picoChanAnim.SetInteger("STATE", 0);
+        //            transform.position = Vector3.zero;
+        //            GetComponent<BoxCollider>().size = new Vector3(1f, 2.8f, 1f);
+        //            GetComponent<BoxCollider>().center = new Vector3(0, 0.9f, 0);
+        //            jumpHeight = 3f;
+        //            if (Input.GetButtonDown("Jump"))
+        //            {
+        //                playerState = PLAYERSTATE.JUMP;
+        //            }
+        //            break;
+        //        case PLAYERSTATE.RUN:
+        //            picoChanAnim.SetInteger("STATE", 1);
+        //            Debug.Log(1);
+        //            transform.Translate(Vector3.forward * Time.deltaTime * speed);
+        //            if(Input.GetButtonDown("Jump"))
+        //            {
+        //                playerState = PLAYERSTATE.JUMP;
+        //            }
+        //            break;
+        //        case PLAYERSTATE.JUMP:
+        //            break;
+        //        case PLAYERSTATE.ATTACK:
+        //            break;
+        //        default:
+        //            break;
+        //    }
+        //}
+        
         GroundCheck(); //땅 위에 서있는
-        InputAndDir();
+        
         Jump();
     }
 
@@ -46,6 +85,11 @@ public class PlayerController : MonoBehaviour
 
     void InputAndDir()
     {
+        Vector3 moveVec = new Vector3(dir.x, 0, dir.z);
+        float move = moveVec.magnitude;
+
+        picoChanAnim.SetFloat("Move", move);
+     
         dir.x = Input.GetAxis("Horizontal");
         dir.z = Input.GetAxis("Vertical");
         if(dir != Vector3.zero)
